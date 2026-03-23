@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Ruleta de Bonos - Gira y Gana</title>
+    <meta name="description" content="Gira la ruleta y obtén tu bono de fichas extra. ¡Hasta un 30% de bonificación!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Partículas de fondo -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">🎰</span>
+            <span class="logo-text">BONUS<span class="gold">SPIN</span></span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="title">
+            <span class="title-line1">GIRA LA RULETA</span>
+            <span class="title-line2">Y GANA TU <span class="gold">BONO</span></span>
+        </h1>
+        <p class="subtitle">Ingresa tu nombre de usuario y gira para descubrir tu bono de fichas extra</p>
+
+        <!-- Username Input -->
+        <div class="username-section" id="usernameSection">
+            <div class="input-wrapper">
+                <span class="input-icon">👤</span>
+                <input 
+                    type="text" 
+                    id="usernameInput" 
+                    placeholder="Tu nombre de usuario..." 
+                    maxlength="30"
+                    autocomplete="off"
+                >
+            </div>
+            <p class="input-error" id="inputError"></p>
+        </div>
+
+        <!-- Roulette Container -->
+        <div class="roulette-container">
+            <!-- Luces decorativas -->
+            <div class="roulette-lights">
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+                <span class="light"></span><span class="light"></span><span class="light"></span>
+            </div>
+
+            <!-- Pointer -->
+            <div class="pointer">▼</div>
+
+            <!-- Roulette Wheel -->
+            <div class="wheel-wrapper">
+                <canvas id="rouletteCanvas" width="400" height="400"></canvas>
+            </div>
+
+            <!-- Spin Button -->
+            <button class="spin-btn" id="spinBtn" onclick="spinRoulette()">
+                <span class="spin-btn-text">¡GIRAR!</span>
+                <span class="spin-btn-glow"></span>
+            </button>
+        </div>
+
+        <!-- Bonus Cards Preview -->
+        <div class="bonus-cards">
+            <div class="bonus-card card-10">
+                <div class="card-badge">COMÚN</div>
+                <div class="card-percent">10%</div>
+                <div class="card-label">BONO</div>
+            </div>
+            <div class="bonus-card card-20">
+                <div class="card-badge">RARO</div>
+                <div class="card-percent">20%</div>
+                <div class="card-label">BONO</div>
+            </div>
+            <div class="bonus-card card-30">
+                <div class="card-badge">ÉPICO</div>
+                <div class="card-percent">30%</div>
+                <div class="card-label">BONO</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Result Modal -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal">
+            <div class="confetti-container" id="confettiContainer"></div>
+            <div class="modal-content">
+                <h2 class="modal-title">🎉 ¡FELICIDADES!</h2>
+                <p class="modal-username" id="modalUsername"></p>
+                <div class="modal-prize" id="modalPrize">
+                    <span class="prize-percent" id="prizePercent"></span>
+                    <span class="prize-label">BONO DE FICHAS EXTRA</span>
+                </div>
+                <p class="modal-message" id="modalMessage"></p>
+                <button class="modal-btn" onclick="closeModal()">¡GENIAL!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin link (discreto) -->
+    <footer class="footer">
+        <a href="admin.html" class="admin-link" title="Panel Admin">⚙️</a>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

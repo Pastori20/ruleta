@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Admin - Panel de Resultados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0e17;
+            --bg-card: rgba(17, 24, 39, 0.9);
+            --gold: #f5c518;
+            --gold-dark: #c9a100;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --blue: #3b82f6;
+            --purple: #a855f7;
+            --green: #22c55e;
+            --red: #ef4444;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 30% 30%, rgba(245,197,24,0.04), transparent 60%),
+                        radial-gradient(ellipse at 70% 70%, rgba(168,85,247,0.04), transparent 60%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .admin-title span { color: var(--gold); }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.5rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+        }
+
+        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--gold), #f59e0b); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--blue), #06b6d4); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--purple), #ec4899); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--gold), var(--gold-dark)); }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card:nth-child(2) .stat-value { color: var(--blue); }
+        .stat-card:nth-child(3) .stat-value { color: var(--purple); }
+        .stat-card:nth-child(4) .stat-value { color: var(--gold); }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.6rem 1.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--bg);
+        }
+
+        .btn-export:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(245,197,24,0.3); }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover { background: rgba(239, 68, 68, 0.25); }
+
+        .btn-refresh {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-refresh:hover { background: rgba(59, 130, 246, 0.25); }
+
+        /* Table */
+        .table-wrapper {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .table-title {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .result-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        tbody td {
+            padding: 0.85rem 1.5rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(245, 197, 24, 0.03);
+        }
+
+        .bonus-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .badge-10 {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .badge-20 {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+        }
+
+        .badge-30 {
+            background: rgba(245, 197, 24, 0.15);
+            color: #ffe066;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .admin-title { font-size: 1.3rem; }
+            thead th, tbody td { padding: 0.6rem 0.75rem; font-size: 0.8rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1 class="admin-title">🎰 Panel <span>Admin</span></h1>
+            <a href="index.html" class="back-link">← Volver a Ruleta</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">TOTAL JUGADORES</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="count10">0</div>
+                <div class="stat-label">BONO 10%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="count20">0</div>
+                <div class="stat-label">BONO 20%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="count30">0</div>
+                <div class="stat-label">BONO 30%</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="action-btn btn-export" onclick="exportCSV()">📥 Exportar CSV</button>
+            <button class="action-btn btn-refresh" onclick="loadData()">🔄 Actualizar</button>
+            <button class="action-btn btn-delete" onclick="clearData()">🗑️ Borrar Todo</button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <div class="table-header-bar">
+                <span class="table-title">Historial de Resultados</span>
+                <span class="result-count" id="resultCount">0 resultados</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Usuario</th>
+                        <th>Bono</th>
+                        <th>Fecha / Hora</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'casinoBonusResults';
+
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        function loadData() {
+            const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            // Stats
+            const total = results.length;
+            const c10 = results.filter(r => r.bonus === 10).length;
+            const c20 = results.filter(r => r.bonus === 20).length;
+            const c30 = results.filter(r => r.bonus === 30).length;
+
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('count10').textContent = c10;
+            document.getElementById('count20').textContent = c20;
+            document.getElementById('count30').textContent = c30;
+            document.getElementById('resultCount').textContent = `${total} resultado${total !== 1 ? 's' : ''}`;
+
+            // Table
+            const tbody = document.getElementById('resultsBody');
+            
+            if (results.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <div class="empty-icon">🎲</div>
+                                <p>No hay resultados aún</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Show newest first
+            const sorted = [...results].reverse();
+            tbody.innerHTML = sorted.map((r, i) => {
+                const badgeClass = `badge-${r.bonus}`;
+                return `
+                    <tr>
+                        <td style="color: var(--text-muted);">${sorted.length - i}</td>
+                        <td style="font-weight: 600;">${escapeHtml(r.username)}</td>
+                        <td><span class="bonus-badge ${badgeClass}">${r.label}</span></td>
+                        <td style="color: var(--text-secondary); font-size: 0.85rem;">${r.date}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function exportCSV() {
+            const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            if (results.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            const header = 'Usuario,Bono,Fecha\n';
+            const rows = results.map(r => `"${r.username}",${r.label},"${r.date}"`).join('\n');
+            const csv = header + rows;
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bonos_resultados_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearData() {
+            if (confirm('⚠️ ¿Estás seguro de borrar TODOS los resultados? Esta acción no se puede deshacer.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                loadData();
+            }
+        }
+    </script>
+</body>
+</html>
